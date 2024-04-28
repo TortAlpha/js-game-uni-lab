@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Canvas Mountains</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        canvas { border: 1px solid black; }
+    </style>
+</head>
+<body>
+<canvas id="canvas" width="1200" height="800"></canvas>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Параметры карты и вида
+    const mapWidth = 4800;
+    const mapHeight = 800;
+    const viewWidth = canvas.width;
+    const viewHeight = canvas.height;
+
+    // Симуляция гор
+    function drawMountains() {
+        ctx.beginPath();
+        ctx.moveTo(0, mapHeight);
+        
+        // Создание случайных "гор"
+        let x = 0;
+        while (x < mapWidth) {
+            const peakHeight = Math.random() * 300 + 300; // Высота горы от 300 до 600
+            const peakWidth = Math.random() * 200 + 100;  // Ширина основания горы от 100 до 300
+            ctx.lineTo(x + peakWidth / 2, mapHeight - peakHeight);
+            ctx.lineTo(x + peakWidth, mapHeight);
+            x += peakWidth;
+        }
+
+        ctx.lineTo(mapWidth, mapHeight);
+        ctx.closePath();
+        ctx.fillStyle = '#8B4513'; // Цвет гор
+        ctx.fill();
+    }
+
+    // Функция отображения части карты
+    function renderView(viewX) {
+        ctx.clearRect(0, 0, viewWidth, viewHeight); // Очистка холста
+        ctx.save();
+        ctx.translate(-viewX, 0); // Смещение вида
+        drawMountains();
+        ctx.restore();
+    }
+
+    let viewX = 0; // Начальная позиция просмотра
+    renderView(viewX);
+
+    // Добавление управления стрелками для перемещения по карте
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight') {
+            viewX = Math.min(viewX + 100, mapWidth - viewWidth);
+        } else if (e.key === 'ArrowLeft') {
+            viewX = Math.max(viewX - 100, 0);
+        }
+        renderView(viewX);
+    });
+</script>
+</body>
+</html>
